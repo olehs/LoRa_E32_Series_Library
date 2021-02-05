@@ -32,7 +32,7 @@
 #include "LoRa_E32.h"
 
 #ifdef ACTIVATE_SOFTWARE_SERIAL
-LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, UART_BPS_RATE bpsRate)
+LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, UART_BPS_RATE bpsRate, SoftwareSerialConfig serialConfig)
 {
     this->txE32pin = txE32pin;
     this->rxE32pin = rxE32pin;
@@ -42,9 +42,10 @@ LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, UART_BPS_RATE bpsRate)
     this->hs = NULL;
 
     this->bpsRate = bpsRate;
+    this->swSerialConfig = serialConfig;
 }
 
-LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, byte auxPin, UART_BPS_RATE bpsRate)
+LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, byte auxPin, UART_BPS_RATE bpsRate, SoftwareSerialConfig serialConfig)
 {
     this->txE32pin = txE32pin;
     this->rxE32pin = rxE32pin;
@@ -55,9 +56,10 @@ LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, byte auxPin, UART_BPS_RATE bpsR
     this->hs = NULL;
 
     this->bpsRate = bpsRate;
+    this->swSerialConfig = serialConfig;
 }
 
-LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate)
+LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate, SoftwareSerialConfig serialConfig)
 {
     this->txE32pin = txE32pin;
     this->rxE32pin = rxE32pin;
@@ -73,10 +75,11 @@ LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, byte auxPin, byte m0Pin, byte m
     this->hs = NULL;
 
     this->bpsRate = bpsRate;
+    this->swSerialConfig = serialConfig;
 }
 #endif
 
-LoRa_E32::LoRa_E32(HardwareSerial* serial, UART_BPS_RATE bpsRate)
+LoRa_E32::LoRa_E32(HardwareSerial* serial, UART_BPS_RATE bpsRate, SerialConfig serialConfig)
 {
     this->txE32pin = txE32pin;
     this->rxE32pin = rxE32pin;
@@ -88,9 +91,10 @@ LoRa_E32::LoRa_E32(HardwareSerial* serial, UART_BPS_RATE bpsRate)
     this->hs = serial;
 
     this->bpsRate = bpsRate;
+    this->serialConfig = serialConfig;
 }
 
-LoRa_E32::LoRa_E32(HardwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate)
+LoRa_E32::LoRa_E32(HardwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate, SerialConfig serialConfig)
 {
     this->txE32pin = txE32pin;
     this->rxE32pin = rxE32pin;
@@ -103,9 +107,10 @@ LoRa_E32::LoRa_E32(HardwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate)
     this->hs = serial;
 
     this->bpsRate = bpsRate;
+    this->serialConfig = serialConfig;
 }
 
-LoRa_E32::LoRa_E32(HardwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate)
+LoRa_E32::LoRa_E32(HardwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate, SerialConfig serialConfig)
 {
     this->txE32pin = txE32pin;
     this->rxE32pin = rxE32pin;
@@ -122,10 +127,11 @@ LoRa_E32::LoRa_E32(HardwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, 
     this->hs = serial;
 
     this->bpsRate = bpsRate;
+    this->serialConfig = serialConfig;
 }
 
 #ifdef HARDWARE_SERIAL_SELECTABLE_PIN
-LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, UART_BPS_RATE bpsRate, uint32_t serialConfig)
+LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, UART_BPS_RATE bpsRate, SerialConfig serialConfig)
 {
     this->txE32pin = txE32pin;
     this->rxE32pin = rxE32pin;
@@ -134,14 +140,13 @@ LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, UART_BP
     this->ss = NULL;
 #endif
 
-    this->serialConfig = serialConfig;
-
     this->hs = serial;
 
     this->bpsRate = bpsRate;
+    this->serialConfig = serialConfig;
 }
 
-LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate, uint32_t serialConfig)
+LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate, SerialConfig serialConfig)
 {
     this->txE32pin = txE32pin;
     this->rxE32pin = rxE32pin;
@@ -151,14 +156,13 @@ LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, byte au
     this->ss = NULL;
 #endif
 
-    this->serialConfig = serialConfig;
-
     this->hs = serial;
 
     this->bpsRate = bpsRate;
+    this->serialConfig = serialConfig;
 }
 
-LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate, uint32_t serialConfig)
+LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate, SerialConfig serialConfig)
 {
     this->txE32pin = txE32pin;
     this->rxE32pin = rxE32pin;
@@ -172,17 +176,16 @@ LoRa_E32::LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, byte au
     this->ss = NULL;
 #endif
 
-    this->serialConfig = serialConfig;
-
     this->hs = serial;
 
     this->bpsRate = bpsRate;
+    this->serialConfig = serialConfig;
 }
 #endif
 
 #ifdef ACTIVATE_SOFTWARE_SERIAL
 
-LoRa_E32::LoRa_E32(SoftwareSerial* serial, UART_BPS_RATE bpsRate)
+LoRa_E32::LoRa_E32(SoftwareSerial* serial, UART_BPS_RATE bpsRate, SoftwareSerialConfig serialConfig)
 {
     this->txE32pin = txE32pin;
     this->rxE32pin = rxE32pin;
@@ -191,9 +194,10 @@ LoRa_E32::LoRa_E32(SoftwareSerial* serial, UART_BPS_RATE bpsRate)
     this->hs = NULL;
 
     this->bpsRate = bpsRate;
+    this->swSerialConfig = serialConfig;
 }
 
-LoRa_E32::LoRa_E32(SoftwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate)
+LoRa_E32::LoRa_E32(SoftwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate, SoftwareSerialConfig serialConfig)
 {
     this->txE32pin = txE32pin;
     this->rxE32pin = rxE32pin;
@@ -203,9 +207,10 @@ LoRa_E32::LoRa_E32(SoftwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate)
     this->hs = NULL;
 
     this->bpsRate = bpsRate;
+    this->swSerialConfig = serialConfig;
 }
 
-LoRa_E32::LoRa_E32(SoftwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate)
+LoRa_E32::LoRa_E32(SoftwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate, SoftwareSerialConfig serialConfig)
 {
     this->txE32pin = txE32pin;
     this->rxE32pin = rxE32pin;
@@ -219,6 +224,7 @@ LoRa_E32::LoRa_E32(SoftwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, 
     this->hs = NULL;
 
     this->bpsRate = bpsRate;
+    this->swSerialConfig = serialConfig;
 }
 #endif
 
@@ -251,7 +257,7 @@ bool LoRa_E32::begin(const MODE_TYPE mode)
         }
 #endif
 #ifndef HARDWARE_SERIAL_SELECTABLE_PIN
-        this->serialDef.begin(*this->hs, this->bpsRate);
+        this->serialDef.begin(*this->hs, this->bpsRate, this->serialConfig);
 #endif
         while (!this->hs) {
             ; // wait for serial port to connect. Needed for native USB
@@ -261,7 +267,7 @@ bool LoRa_E32::begin(const MODE_TYPE mode)
     } else if (this->ss) {
         DEBUG_PRINTLN("Begin Software Serial");
 
-        this->serialDef.begin(*this->ss, this->bpsRate);
+        this->serialDef.begin(*this->ss, this->bpsRate, this->swSerialConfig);
     } else {
         DEBUG_PRINTLN("Begin Software Serial Pin");
         // @suppress("Abstract class cannot be instantiated")
@@ -273,7 +279,7 @@ bool LoRa_E32::begin(const MODE_TYPE mode)
         DEBUG_PRINT("TX Pin: ");
         DEBUG_PRINTLN((int)this->rxE32pin);
 
-        this->serialDef.begin(*this->ss, this->bpsRate);
+        this->serialDef.begin(*this->ss, this->bpsRate, this->swSerialConfig);
 #endif
     }
 
@@ -467,9 +473,6 @@ method to set the mode (program, normal, etc.)
 
 Status LoRa_E32::setMode(MODE_TYPE mode, bool wait)
 {
-    // data sheet claims module needs some extra time after mode setting (2ms)
-    // most of my projects uses 10 ms, but 40ms is safer
-
     if (this->m0Pin == -1 && this->m1Pin == -1) {
         DEBUG_PRINTLN(F("The M0 and M1 pins is not set, this mean that you are connect directly the pins as you need!"))
     } else {
@@ -480,29 +483,33 @@ Status LoRa_E32::setMode(MODE_TYPE mode, bool wait)
             digitalWrite(this->m1Pin, LOW);
             DEBUG_PRINTLN("MODE NORMAL!");
             break;
+
         case MODE_1_WAKE_UP:
             digitalWrite(this->m0Pin, HIGH);
             digitalWrite(this->m1Pin, LOW);
             DEBUG_PRINTLN("MODE WAKE UP!");
             break;
+
         case MODE_2_POWER_SAVING:
             digitalWrite(this->m0Pin, LOW);
             digitalWrite(this->m1Pin, HIGH);
             DEBUG_PRINTLN("MODE POWER SAVING!");
             break;
+
         case MODE_3_SLEEP:
             // Mode 3 | Setting operation
             digitalWrite(this->m0Pin, HIGH);
             digitalWrite(this->m1Pin, HIGH);
             DEBUG_PRINTLN("MODE PROGRAM/SLEEP!");
             break;
+
         default:
             return ERR_E32_INVALID_PARAM;
         }
     }
 
     if (wait) {
-        // wait until aux pin goes back high
+        // wait until aux pin goes back HIGH
         Status res = this->waitCompleteResponse(1000);
         if (res != SUCCESS) {
             return res;
@@ -510,6 +517,30 @@ Status LoRa_E32::setMode(MODE_TYPE mode, bool wait)
     }
 
     this->mode = mode;
+
+    if (mode == MODE_3_PROGRAM) {
+        if (this->hs) {
+            this->serialDef.begin(*this->hs, UART_BPS_RATE_9600, SERIAL_8N1);
+        }
+#ifdef ACTIVATE_SOFTWARE_SERIAL
+        else {
+            if (this->ss) {
+                this->serialDef.begin(*this->ss, UART_BPS_RATE_9600, SWSERIAL_8N1);
+            }
+        }
+#endif
+    } else {
+        if (this->hs) {
+            this->serialDef.begin(*this->hs, this->bpsRate, this->serialConfig);
+        }
+#ifdef ACTIVATE_SOFTWARE_SERIAL
+        else {
+            if (this->ss) {
+                this->serialDef.begin(*this->ss, this->bpsRate, this->swSerialConfig);
+            }
+        }
+#endif
+    }
 
     this->cleanUARTBuffer();
 
@@ -578,27 +609,13 @@ RESPONSE_STATUS LoRa_E32::enterProgramMode()
     RESPONSE_STATUS result = SUCCESS;
 
     this->prevMode = this->mode;
+
     if (this->mode != MODE_3_PROGRAM) {
         result = this->setMode(MODE_3_PROGRAM);
         if (result != SUCCESS) {
             return result;
         }
     }
-
-    if (this->bpsRate == UART_BPS_RATE_9600) {
-        return result;
-    }
-
-    if (this->hs) {
-        this->serialDef.begin(*this->hs, UART_BPS_RATE_9600);
-    }
-#ifdef ACTIVATE_SOFTWARE_SERIAL
-    else {
-        if (this->ss) {
-            this->serialDef.begin(*this->ss, UART_BPS_RATE_9600);
-        }
-    }
-#endif
 
     return result;
 }
@@ -607,20 +624,7 @@ RESPONSE_STATUS LoRa_E32::leaveProgramMode()
 {
     RESPONSE_STATUS result = SUCCESS;
 
-    if (this->bpsRate != UART_BPS_RATE_9600) {
-        if (this->hs) {
-            this->serialDef.begin(*this->hs, this->bpsRate);
-        }
-#ifdef ACTIVATE_SOFTWARE_SERIAL
-        else {
-            if (this->ss) {
-                this->serialDef.begin(*this->ss, this->bpsRate);
-            }
-        }
-#endif
-    }
-
-    if (this->prevMode != MODE_3_PROGRAM) {
+    if (this->prevMode != this->mode) {
         result = this->setMode(prevMode);
     }
 

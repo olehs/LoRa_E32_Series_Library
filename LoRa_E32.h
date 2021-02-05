@@ -39,6 +39,7 @@
 #endif
 #ifdef ESP32
 #define HARDWARE_SERIAL_SELECTABLE_PIN
+#define SerialConfig uint32_t
 #endif
 
 #ifdef ACTIVATE_SOFTWARE_SERIAL
@@ -190,41 +191,31 @@ struct ResponseContainer {
     String data;
     ResponseStatus status;
 };
-//struct FixedStransmission {
-//		byte ADDL = 0;
-//		byte ADDH = 0;
-//		byte CHAN = 0;
-//		void *message;
-//};
 #pragma pack(pop)
 
 class LoRa_E32 {
 public:
 #ifdef ACTIVATE_SOFTWARE_SERIAL
-    LoRa_E32(byte txE32pin, byte rxE32pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
-    LoRa_E32(byte txE32pin, byte rxE32pin, byte auxPin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
-    LoRa_E32(byte txE32pin, byte rxE32pin, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
+    LoRa_E32(byte txE32pin, byte rxE32pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, SoftwareSerialConfig serialConfig = SWSERIAL_8N1);
+    LoRa_E32(byte txE32pin, byte rxE32pin, byte auxPin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, SoftwareSerialConfig serialConfig = SWSERIAL_8N1);
+    LoRa_E32(byte txE32pin, byte rxE32pin, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, SoftwareSerialConfig serialConfig = SWSERIAL_8N1);
 #endif
 
-    LoRa_E32(HardwareSerial* serial, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
-    LoRa_E32(HardwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
-    LoRa_E32(HardwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
+    LoRa_E32(HardwareSerial* serial, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, SerialConfig serialConfig = SERIAL_8N1);
+    LoRa_E32(HardwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, SerialConfig serialConfig = SERIAL_8N1);
+    LoRa_E32(HardwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, SerialConfig serialConfig = SERIAL_8N1);
 
 #ifdef HARDWARE_SERIAL_SELECTABLE_PIN
-    LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, UART_BPS_RATE bpsRate, uint32_t serialConfig = SERIAL_8N1);
-    LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate, uint32_t serialConfig = SERIAL_8N1);
-    LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate, uint32_t serialConfig = SERIAL_8N1);
+    LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, SerialConfig serialConfig = SERIAL_8N1);
+    LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, SerialConfig serialConfig = SERIAL_8N1);
+    LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, SerialConfig serialConfig = SERIAL_8N1);
 #endif
 
 #ifdef ACTIVATE_SOFTWARE_SERIAL
-    LoRa_E32(SoftwareSerial* serial, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
-    LoRa_E32(SoftwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
-    LoRa_E32(SoftwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
+    LoRa_E32(SoftwareSerial* serial, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, SoftwareSerialConfig serialConfig = SWSERIAL_8N1);
+    LoRa_E32(SoftwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, SoftwareSerialConfig serialConfig = SWSERIAL_8N1);
+    LoRa_E32(SoftwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, SoftwareSerialConfig serialConfig = SWSERIAL_8N1);
 #endif
-
-    //		LoRa_E32(byte txE32pin, byte rxE32pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, MODE_TYPE mode = MODE_0_NORMAL);
-    //		LoRa_E32(HardwareSerial* serial = &Serial, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, MODE_TYPE mode = MODE_0_NORMAL);
-    //		LoRa_E32(SoftwareSerial* serial, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, MODE_TYPE mode = MODE_0_NORMAL);
 
     bool begin(const MODE_TYPE mode = MODE_0_NORMAL);
     Status setMode(MODE_TYPE mode, bool wait = true);
@@ -258,17 +249,14 @@ private:
 
 #ifdef ACTIVATE_SOFTWARE_SERIAL
     SoftwareSerial* ss;
+    SoftwareSerialConfig swSerialConfig = SWSERIAL_8N1;
 #endif
-
-    bool isSoftwareSerial = true;
 
     int8_t txE32pin = -1;
     int8_t rxE32pin = -1;
     int8_t auxPin = -1;
 
-#ifdef HARDWARE_SERIAL_SELECTABLE_PIN
-    uint32_t serialConfig = SERIAL_8N1;
-#endif
+    SerialConfig serialConfig = SERIAL_8N1;
 
     int8_t m0Pin = -1;
     int8_t m1Pin = -1;
@@ -280,21 +268,21 @@ private:
     UART_BPS_RATE bpsRate = UART_BPS_RATE_9600;
 
     struct NeedsStream {
-        template <typename T>
-        void begin(T& t, int baud)
+#ifdef ACTIVATE_SOFTWARE_SERIAL
+        void begin(SoftwareSerial& t, int baud, SoftwareSerialConfig config)
         {
-            t.begin(baud);
+            t.begin(baud, config);
             stream = &t;
         }
+#endif
 
-#ifdef HARDWARE_SERIAL_SELECTABLE_PIN
-        template <typename T>
-        void begin(T& t, int baud, uint32_t config)
+        void begin(HardwareSerial& t, int baud, SerialConfig config)
         {
             t.begin(baud, config);
             stream = &t;
         }
 
+#ifdef HARDWARE_SERIAL_SELECTABLE_PIN
         template <typename T>
         void begin(T& t, int baud, uint32_t config, int8_t txE32pin, int8_t rxE32pin)
         {
