@@ -57,7 +57,7 @@
 #define MAX_SIZE_TX_PACKET 58
 
 // Uncomment to enable printing out nice debug messages.
-// #define LoRa_E32_DEBUG
+#define LoRa_E32_DEBUG
 
 // Define where debug output will be printed.
 #define DEBUG_PRINTER Serial
@@ -243,6 +243,7 @@ public:
     ResponseContainer receiveMessageUntil(char delimiter = '\0');
 
     int available(unsigned long timeout = 1000);
+    void clearBuffer();
 
 private:
     HardwareSerial* hs;
@@ -305,7 +306,6 @@ private:
     void managedDelay(unsigned long timeout);
     Status waitCompleteResponse(unsigned long timeout = 1000, unsigned int waitNoAux = 100);
     void flush();
-    void cleanUARTBuffer();
 
     Status sendStruct(const void* structureManaged, uint16_t size_, bool fixed = false);
     Status receiveStruct(const void* structureManaged, uint16_t size_);

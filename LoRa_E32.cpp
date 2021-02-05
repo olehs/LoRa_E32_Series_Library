@@ -369,7 +369,7 @@ void LoRa_E32::flush()
     this->serialDef.stream->flush();
 }
 
-void LoRa_E32::cleanUARTBuffer()
+void LoRa_E32::clearBuffer()
 {
     while (this->serialDef.stream->available()) {
         this->serialDef.stream->read();
@@ -403,14 +403,15 @@ Status LoRa_E32::sendStruct(const void* structureManaged, uint16_t size_, bool f
 
     uint8_t len = this->serialDef.stream->write((uint8_t*)structureManaged, size_);
     if (len != size_) {
-        DEBUG_PRINT(F("Send... len:"))
-        DEBUG_PRINT(len);
-        DEBUG_PRINT(F(" size:"))
-        DEBUG_PRINT(size_);
         if (len == 0) {
             result = ERR_E32_NO_RESPONSE_FROM_DEVICE;
         } else {
             result = ERR_E32_DATA_SIZE_NOT_MATCH;
+
+            DEBUG_PRINT(F("Requested: "))
+            DEBUG_PRINT(size_);
+            DEBUG_PRINT(F(", sent:"))
+            DEBUG_PRINTLN(len);
         }
     }
 
@@ -441,22 +442,23 @@ types each handle ints floats differently
 
 */
 
-Status LoRa_E32::receiveStruct(const void* structureManaged, uint16_t size_)
+Status LoRa_E32::receiveStruct(const void* structureManaged, uint16_t size)
 {
     Status result = SUCCESS;
 
-    uint8_t len = this->serialDef.stream->readBytes((uint8_t*)structureManaged, size_);
+    uint8_t len = this->serialDef.stream->readBytes((uint8_t*)structureManaged, size);
 
-    DEBUG_PRINT("Requested: ");
-    DEBUG_PRINT(size_);
-    DEBUG_PRINT(", received: ");
-    DEBUG_PRINTLN(len);
-
-    if (len != size_) {
+    if (len != size) {
         if (len == 0) {
             result = ERR_E32_NO_RESPONSE_FROM_DEVICE;
         } else {
             result = ERR_E32_DATA_SIZE_NOT_MATCH;
+            this->clearBuffer();
+
+            DEBUG_PRINT(F("Requested: "));
+            DEBUG_PRINT(size);
+            DEBUG_PRINT(F(", received: "));
+            DEBUG_PRINTLN(len);
         }
     } else {
         result = SUCCESS;
@@ -542,7 +544,7 @@ Status LoRa_E32::setMode(MODE_TYPE mode, bool wait)
 #endif
     }
 
-    this->cleanUARTBuffer();
+    this->clearBuffer();
 
     return SUCCESS;
 }
@@ -776,18 +778,24 @@ ResponseContainer LoRa_E32::receiveInitialMessage(const uint8_t size)
     rc.status.code = SUCCESS;
     char buff[size + 1];
 
-    memset(buff, '\0', sizeof(buff));
+    memset(buff, 0, sizeof(buff));
     uint8_t len = this->serialDef.stream->readBytes(buff, size);
+
+    rc.data = buff;
+
     if (len != size) {
         if (len == 0) {
             rc.status.code = ERR_E32_NO_RESPONSE_FROM_DEVICE;
         } else {
             rc.status.code = ERR_E32_DATA_SIZE_NOT_MATCH;
-        }
-        return rc;
-    }
+            this->clearBuffer();
 
-    rc.data = buff;
+            DEBUG_PRINT(F("Requested: "));
+            DEBUG_PRINT(size);
+            DEBUG_PRINT(F(", received: "));
+            DEBUG_PRINTLN(len);
+        }
+    }
 
     return rc;
 }
