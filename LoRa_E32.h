@@ -57,7 +57,7 @@
 #define MAX_SIZE_TX_PACKET 58
 
 // Uncomment to enable printing out nice debug messages.
-#define LoRa_E32_DEBUG
+//#define LoRa_E32_DEBUG
 
 // Define where debug output will be printed.
 #define DEBUG_PRINTER Serial
@@ -218,7 +218,7 @@ public:
 #endif
 
     bool begin(const MODE_TYPE mode = MODE_0_NORMAL);
-    Status setMode(MODE_TYPE mode, bool wait = true);
+    Status setMode(MODE_TYPE mode, bool dontWait = false);
     MODE_TYPE getMode();
 
     ResponseStructContainer getConfiguration();

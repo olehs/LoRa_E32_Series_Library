@@ -306,10 +306,13 @@ Status LoRa_E32::waitCompleteResponse(unsigned long timeout, unsigned int waitNo
         t = 0;
     }
 
+    this->managedDelay(2);
+
     // if AUX pin was supplied and look for HIGH state
     // note you can omit using AUX if no pins are available, but you will have to use delay() to let module finish
     if (this->auxPin != -1) {
         bool wasLow = false;
+
         while (digitalRead(this->auxPin) == LOW) {
             wasLow = true;
             if ((millis() - t) > timeout) {
@@ -317,11 +320,13 @@ Status LoRa_E32::waitCompleteResponse(unsigned long timeout, unsigned int waitNo
                 DEBUG_PRINTLN("Timeout error!");
                 return result;
             }
-            yield();
         }
+
         if (wasLow) {
             DEBUG_PRINTLN("AUX HIGH!");
         }
+
+        this->managedDelay(2);
     } else {
         // if you can't use aux pin, use 4K7 pullup with Arduino
         // you may need to adjust this value if transmissions fail
@@ -330,7 +335,6 @@ Status LoRa_E32::waitCompleteResponse(unsigned long timeout, unsigned int waitNo
     }
 
     // per data sheet control after aux goes high is 2ms so delay for at least that long)
-    this->managedDelay(20);
 
     return result;
 }
@@ -473,8 +477,10 @@ method to set the mode (program, normal, etc.)
 
 */
 
-Status LoRa_E32::setMode(MODE_TYPE mode, bool wait)
+Status LoRa_E32::setMode(MODE_TYPE mode, bool dontWait)
 {
+    this->flush();
+
     if (this->m0Pin == -1 && this->m1Pin == -1) {
         DEBUG_PRINTLN(F("The M0 and M1 pins is not set, this mean that you are connect directly the pins as you need!"))
     } else {
@@ -510,16 +516,6 @@ Status LoRa_E32::setMode(MODE_TYPE mode, bool wait)
         }
     }
 
-    if (wait) {
-        // wait until aux pin goes back HIGH
-        Status res = this->waitCompleteResponse(1000);
-        if (res != SUCCESS) {
-            return res;
-        }
-    }
-
-    this->mode = mode;
-
     if (mode == MODE_3_PROGRAM) {
         if (this->hs) {
             this->serialDef.begin(*this->hs, UART_BPS_RATE_9600, SERIAL_8N1);
@@ -544,7 +540,19 @@ Status LoRa_E32::setMode(MODE_TYPE mode, bool wait)
 #endif
     }
 
+    if (!dontWait) {
+        this->managedDelay(20);
+
+        // wait until aux pin goes back HIGH
+        Status res = this->waitCompleteResponse(1000);
+        if (res != SUCCESS) {
+            return res;
+        }
+    }
+
     this->clearBuffer();
+
+    this->mode = mode;
 
     return SUCCESS;
 }
