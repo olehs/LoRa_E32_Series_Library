@@ -35,14 +35,14 @@
 #define LoRa_E32_h
 
 #ifndef ESP32
-	#define ACTIVATE_SOFTWARE_SERIAL
+#define ACTIVATE_SOFTWARE_SERIAL
 #endif
 #ifdef ESP32
-	#define HARDWARE_SERIAL_SELECTABLE_PIN
+#define HARDWARE_SERIAL_SELECTABLE_PIN
 #endif
 
 #ifdef ACTIVATE_SOFTWARE_SERIAL
-	#include <SoftwareSerial.h>
+#include <SoftwareSerial.h>
 #endif
 
 #include <includes/statesNaming.h>
@@ -63,114 +63,132 @@
 
 // Setup debug printing macros.
 #ifdef LoRa_E32_DEBUG
-	#define DEBUG_PRINT(...) { DEBUG_PRINTER.print(__VA_ARGS__); }
-	#define DEBUG_PRINTLN(...) { DEBUG_PRINTER.println(__VA_ARGS__); }
+#define DEBUG_PRINT(...)                  \
+    {                                     \
+        DEBUG_PRINTER.print(__VA_ARGS__); \
+    }
+#define DEBUG_PRINTLN(...)                  \
+    {                                       \
+        DEBUG_PRINTER.println(__VA_ARGS__); \
+    }
 #else
-	#define DEBUG_PRINT(...) {}
-	#define DEBUG_PRINTLN(...) {}
+#define DEBUG_PRINT(...) \
+    {                    \
+    }
+#define DEBUG_PRINTLN(...) \
+    {                      \
+    }
 #endif
 
-enum MODE_TYPE
-{
-  MODE_0_NORMAL = 0,
-  MODE_1_WAKE_UP = 1,
-  MODE_2_POWER_SAVING = 2,
-  MODE_3_SLEEP = 3,
-  MODE_3_PROGRAM =3,
-  MODE_INIT = 0xFF
+enum MODE_TYPE {
+    MODE_0_NORMAL = 0,
+    MODE_1_WAKE_UP = 1,
+    MODE_2_POWER_SAVING = 2,
+    MODE_3_SLEEP = 3,
+    MODE_3_PROGRAM = 3,
+    MODE_INIT = 0xFF
 };
 
-enum PROGRAM_COMMAND
-{
-  WRITE_CFG_PWR_DWN_SAVE  	= 0xC0,
-  READ_CONFIGURATION 		= 0xC1,
-  WRITE_CFG_PWR_DWN_LOSE 	= 0xC2,
-  READ_MODULE_VERSION   	= 0xC3,
-  WRITE_RESET_MODULE     	= 0xC4
+enum PROGRAM_COMMAND {
+    WRITE_CFG_PWR_DWN_SAVE = 0xC0,
+    READ_CONFIGURATION = 0xC1,
+    WRITE_CFG_PWR_DWN_LOSE = 0xC2,
+    READ_MODULE_VERSION = 0xC3,
+    WRITE_RESET_MODULE = 0xC4
 };
 
 #pragma pack(push, 1)
 struct Speed {
-  uint8_t airDataRate : 3; //bit 0-2
-	String getAirDataRate() {
-		return getAirDataRateDescriptionByParams(this->airDataRate);
-	}
+    uint8_t airDataRate : 3; //bit 0-2
+    String getAirDataRate()
+    {
+        return getAirDataRateDescriptionByParams(this->airDataRate);
+    }
 
-  uint8_t uartBaudRate: 3; //bit 3-5
-	String getUARTBaudRate() {
-		return getUARTBaudRateDescriptionByParams(this->uartBaudRate);
-	}
+    uint8_t uartBaudRate : 3; //bit 3-5
+    String getUARTBaudRate()
+    {
+        return getUARTBaudRateDescriptionByParams(this->uartBaudRate);
+    }
 
-  uint8_t uartParity:   2; //bit 6-7
-	String getUARTParityDescription() {
-		return getUARTParityDescriptionByParams(this->uartParity);
-	}
+    uint8_t uartParity : 2; //bit 6-7
+    String getUARTParityDescription()
+    {
+        return getUARTParityDescriptionByParams(this->uartParity);
+    }
 };
 
 struct Option {
-	byte transmissionPower	: 2; //bit 0-1
-	String getTransmissionPowerDescription() {
-		return getTransmissionPowerDescriptionByParams(this->transmissionPower);
-	}
+    byte transmissionPower : 2; //bit 0-1
+    String getTransmissionPowerDescription()
+    {
+        return getTransmissionPowerDescriptionByParams(this->transmissionPower);
+    }
 
-	byte fec       		: 1; //bit 2
-	String getFECDescription() {
-		return getFECDescriptionByParams(this->fec);
-	}
+    byte fec : 1; //bit 2
+    String getFECDescription()
+    {
+        return getFECDescriptionByParams(this->fec);
+    }
 
-	byte wirelessWakeupTime : 3; //bit 3-5
-	String getWirelessWakeUPTimeDescription() {
-		return getWirelessWakeUPTimeDescriptionByParams(this->wirelessWakeupTime);
-	}
+    byte wirelessWakeupTime : 3; //bit 3-5
+    String getWirelessWakeUPTimeDescription()
+    {
+        return getWirelessWakeUPTimeDescriptionByParams(this->wirelessWakeupTime);
+    }
 
-	byte ioDriveMode  		: 1; //bit 6
-	String getIODroveModeDescription() {
-		return getIODriveModeDescriptionDescriptionByParams(this->ioDriveMode);
-	}
+    byte ioDriveMode : 1; //bit 6
+    String getIODroveModeDescription()
+    {
+        return getIODriveModeDescriptionDescriptionByParams(this->ioDriveMode);
+    }
 
-	byte fixedTransmission	: 1; //bit 7
-	String getFixedTransmissionDescription() {
-		return getFixedTransmissionDescriptionByParams(this->fixedTransmission);
-	}
-
+    byte fixedTransmission : 1; //bit 7
+    String getFixedTransmissionDescription()
+    {
+        return getFixedTransmissionDescriptionByParams(this->fixedTransmission);
+    }
 };
 
 struct Configuration {
-	byte HEAD = 0;
-	byte ADDH = 0;
-	byte ADDL = 0;
-	struct Speed SPED;
-	byte CHAN = 0;
-	String getChannelDescription() {
-		return String(this->CHAN + OPERATING_FREQUENCY) + F("MHz") ;
-	}
-	struct Option OPTION;
+    byte HEAD = 0;
+    byte ADDH = 0;
+    byte ADDL = 0;
+    struct Speed SPED;
+    byte CHAN = 0;
+    String getChannelDescription()
+    {
+        return String(this->CHAN + OPERATING_FREQUENCY) + F("MHz");
+    }
+    struct Option OPTION;
 };
 
 struct ModuleInformation {
-	byte HEAD = 0;
-	byte frequency = 0;
-	byte version = 0;
-	byte features = 0;
+    byte HEAD = 0;
+    byte frequency = 0;
+    byte version = 0;
+    byte features = 0;
 };
 
 struct ResponseStatus {
-	Status code;
-	String getResponseDescription() {
-		return getResponseDescriptionByParams(this->code);
-	}
+    Status code;
+    String getResponseDescription()
+    {
+        return getResponseDescriptionByParams(this->code);
+    }
 };
 
 struct ResponseStructContainer {
-	void *data;
-	ResponseStatus status;
-	void close() {
-		free(this->data);
-	}
+    void* data;
+    ResponseStatus status;
+    void close()
+    {
+        free(this->data);
+    }
 };
 struct ResponseContainer {
-	String data;
-	ResponseStatus status;
+    String data;
+    ResponseStatus status;
 };
 //struct FixedStransmission {
 //		byte ADDL = 0;
@@ -181,144 +199,135 @@ struct ResponseContainer {
 #pragma pack(pop)
 
 class LoRa_E32 {
-	public:
-		#ifdef ACTIVATE_SOFTWARE_SERIAL
-			LoRa_E32(byte txE32pin, byte rxE32pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
-			LoRa_E32(byte txE32pin, byte rxE32pin, byte auxPin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
-			LoRa_E32(byte txE32pin, byte rxE32pin, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
-		#endif
-
-		LoRa_E32(HardwareSerial* serial, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
-		LoRa_E32(HardwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
-		LoRa_E32(HardwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
-
-		#ifdef HARDWARE_SERIAL_SELECTABLE_PIN
-			LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, UART_BPS_RATE bpsRate, uint32_t serialConfig = SERIAL_8N1);
-			LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate, uint32_t serialConfig = SERIAL_8N1);
-			LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate, uint32_t serialConfig = SERIAL_8N1);
-		#endif
-
-		#ifdef ACTIVATE_SOFTWARE_SERIAL
-			LoRa_E32(SoftwareSerial* serial, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
-			LoRa_E32(SoftwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
-			LoRa_E32(SoftwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
-		#endif
-
-//		LoRa_E32(byte txE32pin, byte rxE32pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, MODE_TYPE mode = MODE_0_NORMAL);
-//		LoRa_E32(HardwareSerial* serial = &Serial, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, MODE_TYPE mode = MODE_0_NORMAL);
-//		LoRa_E32(SoftwareSerial* serial, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, MODE_TYPE mode = MODE_0_NORMAL);
-
-		bool begin();
-        Status setMode(MODE_TYPE mode);
-        MODE_TYPE getMode();
-
-		ResponseStructContainer getConfiguration();
-		ResponseStatus setConfiguration(Configuration configuration, PROGRAM_COMMAND saveType = WRITE_CFG_PWR_DWN_LOSE);
-
-		ResponseStructContainer getModuleInformation();
-        ResponseStatus resetModule();
-
-        ResponseStatus sendMessage(const void *message, const uint8_t size);
-        ResponseStructContainer receiveMessage(const uint8_t size);
-
-        ResponseStatus sendMessage(const String message);
-        ResponseContainer receiveMessage();
-
-        ResponseStatus sendFixedMessage(byte ADDH,byte ADDL, byte CHAN, const String message);
-        ResponseStatus sendBroadcastFixedMessage(byte CHAN, const String message);
-
-        ResponseStatus sendFixedMessage(byte ADDH,byte ADDL, byte CHAN, const void *message, const uint8_t size);
-        ResponseStatus sendBroadcastFixedMessage(byte CHAN, const void *message, const uint8_t size );
-
-        ResponseContainer receiveInitialMessage(const uint8_t size);
-        ResponseContainer receiveMessageUntil(char delimiter = '\0');
-
-        int available(unsigned long timeout = 1000);
-	private:
-		HardwareSerial* hs;
-
-		#ifdef ACTIVATE_SOFTWARE_SERIAL
-			SoftwareSerial* ss;
-		#endif
-
-		bool isSoftwareSerial = true;
-
-        int8_t txE32pin = -1;
-        int8_t rxE32pin = -1;
-        int8_t auxPin = -1;
-
-#ifdef HARDWARE_SERIAL_SELECTABLE_PIN
-        uint32_t serialConfig = SERIAL_8N1;
+public:
+#ifdef ACTIVATE_SOFTWARE_SERIAL
+    LoRa_E32(byte txE32pin, byte rxE32pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
+    LoRa_E32(byte txE32pin, byte rxE32pin, byte auxPin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
+    LoRa_E32(byte txE32pin, byte rxE32pin, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
 #endif
 
-        int8_t m0Pin = -1;
-        int8_t m1Pin = -1;
-
-        unsigned long halfKeyloqKey = 0x06660708;
-        unsigned long encrypt(unsigned long data);
-        unsigned long decrypt(unsigned long data);
-
-        UART_BPS_RATE bpsRate = UART_BPS_RATE_9600;
-
-		struct NeedsStream{
-  		  template< typename T >
-  		  void begin( T &t, int baud){
-  			  DEBUG_PRINTLN("Begin ");
-  			  t.setTimeout(500);
-  			  t.begin(baud);
-  			  stream = &t;
-  		  }
+    LoRa_E32(HardwareSerial* serial, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
+    LoRa_E32(HardwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
+    LoRa_E32(HardwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
 
 #ifdef HARDWARE_SERIAL_SELECTABLE_PIN
-//		  template< typename T >
-//		  void begin( T &t, int baud, SerialConfig config ){
-//			  DEBUG_PRINTLN("Begin ");
-//			  t.setTimeout(500);
-//			  t.begin(baud, config);
-//			  stream = &t;
-//		  }
-//
-		  template< typename T >
-		  void begin( T &t, int baud, uint32_t config ){
-			  DEBUG_PRINTLN("Begin ");
-			  t.setTimeout(500);
-			  t.begin(baud, config);
-			  stream = &t;
-		  }
-
-		  template< typename T >
-		  void begin( T &t, int baud, uint32_t config, int8_t txE32pin, int8_t rxE32pin ){
-			  DEBUG_PRINTLN("Begin ");
-			  t.setTimeout(500);
-			  t.begin(baud, config, txE32pin, rxE32pin);
-			  stream = &t;
-		  }
+    LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, UART_BPS_RATE bpsRate, uint32_t serialConfig = SERIAL_8N1);
+    LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate, uint32_t serialConfig = SERIAL_8N1);
+    LoRa_E32(byte txE32pin, byte rxE32pin, HardwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate, uint32_t serialConfig = SERIAL_8N1);
 #endif
 
-		  void listen(){
+#ifdef ACTIVATE_SOFTWARE_SERIAL
+    LoRa_E32(SoftwareSerial* serial, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
+    LoRa_E32(SoftwareSerial* serial, byte auxPin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
+    LoRa_E32(SoftwareSerial* serial, byte auxPin, byte m0Pin, byte m1Pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600);
+#endif
 
-		  }
+    //		LoRa_E32(byte txE32pin, byte rxE32pin, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, MODE_TYPE mode = MODE_0_NORMAL);
+    //		LoRa_E32(HardwareSerial* serial = &Serial, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, MODE_TYPE mode = MODE_0_NORMAL);
+    //		LoRa_E32(SoftwareSerial* serial, UART_BPS_RATE bpsRate = UART_BPS_RATE_9600, MODE_TYPE mode = MODE_0_NORMAL);
 
+    bool begin(const MODE_TYPE mode = MODE_0_NORMAL);
+    Status setMode(MODE_TYPE mode, bool wait = true);
+    MODE_TYPE getMode();
 
-		  Stream *stream;
-		};
-		NeedsStream serialDef;
+    ResponseStructContainer getConfiguration();
+    ResponseStatus setConfiguration(Configuration configuration, PROGRAM_COMMAND saveType = WRITE_CFG_PWR_DWN_LOSE);
 
-        MODE_TYPE mode = MODE_0_NORMAL;
+    ResponseStructContainer getModuleInformation();
+    ResponseStatus resetModule();
 
-        void managedDelay(unsigned long timeout);
-        Status waitCompleteResponse(unsigned long timeout = 1000, unsigned int waitNoAux = 100);
-        void flush();
-        void cleanUARTBuffer();
+    ResponseStatus sendMessage(const void* message, const uint8_t size);
+    ResponseStructContainer receiveMessage(const uint8_t size);
+    ResponseContainer receiveInitialMessage(const uint8_t size);
 
-        Status sendStruct(void *structureManaged, uint16_t size_);
-        Status receiveStruct(void *structureManaged, uint16_t size_);
-        void writeProgramCommand(PROGRAM_COMMAND cmd);
+    ResponseStatus sendMessage(const String message);
+    ResponseContainer receiveMessage();
 
-        RESPONSE_STATUS checkUARTConfiguration(MODE_TYPE mode);
+    ResponseStatus sendFixedMessage(byte ADDH, byte ADDL, byte CHAN, const String message);
+    ResponseStatus sendBroadcastFixedMessage(byte CHAN, const String message);
+
+    ResponseStatus sendFixedMessage(byte ADDH, byte ADDL, byte CHAN, const void* message, const uint8_t size);
+    ResponseStatus sendBroadcastFixedMessage(byte CHAN, const void* message, const uint8_t size);
+
+    ResponseContainer receiveMessageUntil(char delimiter = '\0');
+
+    int available(unsigned long timeout = 1000);
+
+private:
+    HardwareSerial* hs;
+
+#ifdef ACTIVATE_SOFTWARE_SERIAL
+    SoftwareSerial* ss;
+#endif
+
+    bool isSoftwareSerial = true;
+
+    int8_t txE32pin = -1;
+    int8_t rxE32pin = -1;
+    int8_t auxPin = -1;
+
+#ifdef HARDWARE_SERIAL_SELECTABLE_PIN
+    uint32_t serialConfig = SERIAL_8N1;
+#endif
+
+    int8_t m0Pin = -1;
+    int8_t m1Pin = -1;
+
+    unsigned long halfKeyloqKey = 0x06660708;
+    unsigned long encrypt(unsigned long data);
+    unsigned long decrypt(unsigned long data);
+
+    UART_BPS_RATE bpsRate = UART_BPS_RATE_9600;
+
+    struct NeedsStream {
+        template <typename T>
+        void begin(T& t, int baud)
+        {
+            t.begin(baud);
+            stream = &t;
+        }
+
+#ifdef HARDWARE_SERIAL_SELECTABLE_PIN
+        template <typename T>
+        void begin(T& t, int baud, uint32_t config)
+        {
+            t.begin(baud, config);
+            stream = &t;
+        }
+
+        template <typename T>
+        void begin(T& t, int baud, uint32_t config, int8_t txE32pin, int8_t rxE32pin)
+        {
+            t.begin(baud, config, txE32pin, rxE32pin);
+            stream = &t;
+        }
+#endif
+
+        void listen()
+        {
+        }
+
+        Stream* stream;
+    };
+    NeedsStream serialDef;
+
+    MODE_TYPE prevMode;
+    MODE_TYPE mode = MODE_0_NORMAL;
+
+    void managedDelay(unsigned long timeout);
+    Status waitCompleteResponse(unsigned long timeout = 1000, unsigned int waitNoAux = 100);
+    void flush();
+    void cleanUARTBuffer();
+
+    Status sendStruct(const void* structureManaged, uint16_t size_, bool fixed = false);
+    Status receiveStruct(const void* structureManaged, uint16_t size_);
+    void writeProgramCommand(PROGRAM_COMMAND cmd);
+
+    RESPONSE_STATUS enterProgramMode();
+    RESPONSE_STATUS leaveProgramMode();
 
 #ifdef LoRa_E32_DEBUG
-        void printParameters(struct Configuration *configuration);
+    void printParameters(struct Configuration* configuration);
 #endif
 };
 
